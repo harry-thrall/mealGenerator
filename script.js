@@ -1,9 +1,13 @@
 const get_meal_btn = document.getElementById('get_meal');
 const get_cocktail_btn = document.getElementById('get_cocktail');
+const get_both_btn = document.getElementById('get_both');
 const meal_container = document.getElementById('meal');
 const drink_container = document.getElementById('drink');
 
 get_meal_btn.addEventListener('click', () => {
+  //Clear cocktails div
+  drink_container.innerHTML = '';
+
   fetch('https://www.themealdb.com/api/json/v1/1/random.php')
     .then(response => response.json())
     .then(response => {
@@ -15,6 +19,29 @@ get_meal_btn.addEventListener('click', () => {
 });
 
 get_cocktail_btn.addEventListener('click', () => {
+  //Clear meal div
+  meal_container.innerHTML = '';
+
+  fetch('https://www.thecocktaildb.com/api/json/v1/1/random.php')
+    .then(response => response.json())
+    .then(response => {
+      createDrink(response.drinks[0]);
+    })
+    .catch(e => {
+      console.warn(e);
+    });
+});
+
+get_both_btn.addEventListener('click', () => {
+  fetch('https://www.themealdb.com/api/json/v1/1/random.php')
+    .then(response => response.json())
+    .then(response => {
+      createMeal(response.meals[0]);
+    })
+    .catch(e => {
+      console.warn(e);
+    });
+
   fetch('https://www.thecocktaildb.com/api/json/v1/1/random.php')
     .then(response => response.json())
     .then(response => {
@@ -26,9 +53,6 @@ get_cocktail_btn.addEventListener('click', () => {
 });
 
 const createMeal = meal => {
-  //Clear cocktails div
-  drink_container.innerHTML = '';
-
 	const ingredients = [];
 
 	// Get all ingredients from the object. Up to 20
@@ -91,10 +115,6 @@ const createMeal = meal => {
 //Code for cocktail generation
 
 const createDrink = drink => {
-  //Clear meal div
-  meal_container.innerHTML = '';
-
-
 	const ingredients = [];
 
 	// Get all ingredients from the object. Up to 20
