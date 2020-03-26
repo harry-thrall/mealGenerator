@@ -1,5 +1,7 @@
 const get_meal_btn = document.getElementById('get_meal');
+const get_cocktail_btn = document.getElementById('get_cocktail');
 const meal_container = document.getElementById('meal');
+const drink_container = document.getElementById('drink');
 
 get_meal_btn.addEventListener('click', () => {
   fetch('https://www.themealdb.com/api/json/v1/1/random.php')
@@ -12,7 +14,21 @@ get_meal_btn.addEventListener('click', () => {
     });
 });
 
+get_cocktail_btn.addEventListener('click', () => {
+  fetch('https://www.thecocktaildb.com/api/json/v1/1/random.php')
+    .then(response => response.json())
+    .then(response => {
+      createDrink(response.drinks[0]);
+    })
+    .catch(e => {
+      console.warn(e);
+    });
+});
+
 const createMeal = meal => {
+  //Clear cocktails div
+  drink_container.innerHTML = '';
+
 	const ingredients = [];
 
 	// Get all ingredients from the object. Up to 20
@@ -70,4 +86,57 @@ const createMeal = meal => {
 	`;
 
 	meal_container.innerHTML = newInnerHTML;
+};
+
+//Code for cocktail generation
+
+const createDrink = drink => {
+  //Clear meal div
+  meal_container.innerHTML = '';
+
+
+	const ingredients = [];
+
+	// Get all ingredients from the object. Up to 20
+	for (let i = 1; i <= 20; i++) {
+		if (drink[`strIngredient${i}`]) {
+			ingredients.push(
+				`${drink[`strIngredient${i}`]} - ${drink[`strMeasure${i}`]}`
+			);
+		} else {
+			// Stop if there are no more ingredients
+			break;
+		}
+	}
+
+	const newInnerHTML = `
+		<div class="row">
+			<div class="columns five">
+				<img src="${drink.strDrinkThumb}" alt="Drink Image">
+				${
+					drink.strCategory
+						? `<p><strong>Category:</strong> ${drink.strCategory}</p>`
+						: ''
+				}
+				${drink.strAlcoholic ? `<p><strong>Alcoholic:</strong> ${drink.strAlcoholic}</p>` : ''}
+				${
+					drink.strTags
+						? `<p><strong>Tags:</strong> ${drink.strTags
+								.split(',')
+								.join(', ')}</p>`
+						: ''
+				}
+				<h5>Ingredients:</h5>
+				<ul>
+					${ingredients.map(ingredient => `<li>${ingredient}</li>`).join('')}
+				</ul>
+			</div>
+			<div class="columns seven">
+				<h4>${drink.strDrink}</h4>
+				<p>${drink.strInstructions}</p>
+			</div>
+		</div>
+	`;
+
+	drink_container.innerHTML = newInnerHTML;
 };
